@@ -1,5 +1,5 @@
 import { useState } from "react";
-import logo from '../assets/logo.png'
+import logo from '../assets/Banner.png'
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -18,7 +18,7 @@ export default function Navbar() {
 
        <div className="flex">
         <img className="h-15 w-15 rounded-full " src={logo} alt="" />
-        <a href="#" className="text-3xl font-bold text-[#F5F1E8] mt-3">Kind<span className="text-[#DCCFC0]">Ora</span></a>
+        <a href="#" className="text-3xl font-bold text-[#F5F1E8] mt-3">Hope<span className="text-[#DCCFC0]">Bridge</span></a>
        </div>
 
         <ul className="hidden md:flex items-center gap-8">
@@ -50,7 +50,7 @@ export default function Navbar() {
           hidden md:block
           bg-[#DCCFC0]
           text-[#3A4035]
-          px-7 py-3
+          px-10 py-3
           rounded-full
           font-semibold
           transition
