@@ -2,6 +2,7 @@ import foodImg from "../assets/featuredcampaigns/food.jpg";
 import educationImg from "../assets/featuredcampaigns/education.jpg";
 import bloodImg from "../assets/featuredcampaigns/blood.jpg";
 import floodImg from "../assets/featuredcampaigns/flood.jpg";
+import { Link } from "react-router-dom";
 
 const featuredCampaigns = [
   {
@@ -127,9 +128,25 @@ const FeaturedCampaigns = () => {
 
                   </div>
 
-                  <button className="w-full mt-6 bg-[#7A866E] text-white py-3 rounded-xl font-semibold hover:bg-[#65735A] transition duration-300">
-                    Donate Now
-                  </button>
+                  <Link
+  to="/donate"
+  className="
+    block
+    w-full
+    mt-6
+    bg-[#7A866E]
+    text-white
+    py-3
+    rounded-xl
+    font-semibold
+    text-center
+    hover:bg-[#65735A]
+    transition
+    duration-300
+  "
+>
+  Donate Now
+</Link>
 
                 </div>
 

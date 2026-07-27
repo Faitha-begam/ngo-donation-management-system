@@ -1,4 +1,5 @@
 import banner from "../assets/homeBanner.jpg";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
@@ -37,9 +38,12 @@ const Hero = () => {
           </p>
 
           <div className="mt-10 flex gap-4">
-            <button className="bg-[#7A866E] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#65735A] transition duration-300">
-              Donate Now
-            </button>
+            <Link
+  to="/donate"
+  className="bg-[#7A866E] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#65735A] transition duration-300"
+>
+  Donate Now
+</Link>
 
             <button className="border-2 border-[#7A866E] text-[#7A866E] px-8 py-3 rounded-full font-semibold hover:bg-[#7A866E] hover:text-white transition duration-300">
               Explore Campaigns

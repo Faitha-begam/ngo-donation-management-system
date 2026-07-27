@@ -1,27 +1,25 @@
-import React from 'react'
-import Navbar from './components/Navbar'
-import Footer from './components/Footer'
-import Hero from './components/Hero'
-import Impact from './components/Impact'
-import FeaturedCampaigns from './components/FeaturedCampaigns'
-import SuccessStories from './components/SuccessStories'
+import { Routes, Route } from "react-router-dom";
+
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import Donate from "./pages/Donate";
+import Home from "./pages/Home";
+import Campaigns from "./pages/Campaigns";
 
 const App = () => {
   return (
     <>
-      <Navbar/>
-      
-      <Hero/>
+      <Navbar />
 
-      <Impact/>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/campaigns" element={<Campaigns />} />
+        <Route path="/donate" element={<Donate/>} />
+      </Routes>
 
-      <FeaturedCampaigns/>
-
-      <SuccessStories/>
-      
-      <Footer/>
+      <Footer />
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
