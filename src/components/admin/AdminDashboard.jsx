@@ -72,6 +72,8 @@ const StatCard = ({
 
 
 
+
+
 const AdminDashboard = () => {
 
 
@@ -87,11 +89,16 @@ const AdminDashboard = () => {
 
 
 
+
+
   useEffect(()=>{
 
     loadUsers();
 
   },[]);
+
+
+
 
 
 
@@ -110,15 +117,29 @@ const AdminDashboard = () => {
 
 
 
+  // ADDED: remove admin from donor calculations
+  const donors = users.filter(
+    user => user.role !== "admin"
+  );
+
+
+
+
+
+
+
   const totalUsers =
-  users.length;
+  donors.length;
+
+
+
 
 
 
 
 
   const totalDonations =
-  users.reduce(
+  donors.reduce(
 
     (total,user)=>
 
@@ -133,8 +154,12 @@ const AdminDashboard = () => {
 
 
 
+
+
+
+
   const totalAmount =
-  users.reduce(
+  donors.reduce(
 
     (total,user)=>
 
@@ -160,8 +185,10 @@ const AdminDashboard = () => {
 
 
 
+
+
   const totalVolunteers =
-  users.filter(
+  donors.filter(
 
     user =>
 
@@ -176,12 +203,14 @@ const AdminDashboard = () => {
 
 
 
+
   const filteredUsers =
-  users.filter(user=>{
+  donors.filter(user=>{
 
 
     const searchValue =
     search.toLowerCase();
+
 
 
 
@@ -196,6 +225,7 @@ const AdminDashboard = () => {
       user.email
       ?.toLowerCase()
       .includes(searchValue);
+
 
 
 
@@ -228,6 +258,7 @@ const AdminDashboard = () => {
 
 
 
+
     return (
       matchesSearch &&
       matchesFilter
@@ -235,6 +266,8 @@ const AdminDashboard = () => {
 
 
   });
+
+
 
 
 
@@ -251,17 +284,15 @@ const AdminDashboard = () => {
 
 
 
+
+
+
   const closeModal = ()=>{
 
     setSelectedUser(null);
 
   };
-
-
-
-
-
-  return (
+    return (
 
     <div
       className="
@@ -318,6 +349,7 @@ const AdminDashboard = () => {
 
 
 
+
           <button
 
             onClick={()=>{
@@ -349,7 +381,12 @@ const AdminDashboard = () => {
 
 
         </div>
-                {/* STAT CARDS */}
+
+
+
+
+
+        {/* STAT CARDS */}
 
         <div
           className="
@@ -368,9 +405,10 @@ const AdminDashboard = () => {
 
             value={totalUsers}
 
-            icon="👥"
+            icon=""
 
           />
+
 
 
           <StatCard
@@ -379,9 +417,10 @@ const AdminDashboard = () => {
 
             value={totalDonations}
 
-            icon="💰"
+            icon=""
 
           />
+
 
 
           <StatCard
@@ -390,9 +429,10 @@ const AdminDashboard = () => {
 
             value={`₹${totalAmount.toLocaleString()}`}
 
-            icon="📈"
+            icon=""
 
           />
+
 
 
           <StatCard
@@ -401,7 +441,7 @@ const AdminDashboard = () => {
 
             value={totalVolunteers}
 
-            icon="🤝"
+            icon=""
 
           />
 
@@ -470,6 +510,7 @@ const AdminDashboard = () => {
               "
 
             />
+
 
 
 
@@ -611,6 +652,7 @@ const AdminDashboard = () => {
 
 
 
+
           {
 
             filteredUsers.length > 0
@@ -635,19 +677,6 @@ const AdminDashboard = () => {
               py-16
               "
             >
-
-
-              <div
-                className="
-                text-5xl
-                mb-4
-                "
-              >
-
-                🔍
-
-              </div>
-
 
 
               <h3
@@ -718,7 +747,6 @@ const AdminDashboard = () => {
 
 
     </div>
-
 
   );
 

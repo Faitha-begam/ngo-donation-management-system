@@ -1,161 +1,518 @@
-// ================================
-// Local Storage Helper
-// ================================
+// ==========================================
+// STORAGE SERVICE
+// Handles ONLY localStorage operations
+// ==========================================
 
-// ---------- Keys ----------
+
+
+// ==========================================
+// STORAGE KEYS
+// ==========================================
+
+
 export const STORAGE_KEYS = {
-  USERS: "users",
-  CURRENT_USER: "currentUser",
-  DONATIONS: "donations",
-  VOLUNTEERS: "volunteers",
-  CONTACTS: "contactMessages",
-  CAMPAIGNS: "campaigns",
+
+
+  USERS:
+  "users",
+
+
+
+  CURRENT_USER:
+  "currentUser",
+
+
+
+  DONATIONS:
+  "donations",
+
+
+
+  VOLUNTEERS:
+  "volunteers",
+
+
+
+  CONTACTS:
+  "contactMessages",
+
+
+
+  CAMPAIGNS:
+  "campaigns",
+
+
+
+  ADMIN_LOGS:
+  "adminLogs",
+
+
 };
 
-// ================================
-// Generic Functions
-// ================================
 
-export const getData = (key) => {
-  try {
-    const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : [];
-  } catch (error) {
-    console.error(`Error reading ${key}`, error);
-    return [];
+
+
+
+
+
+// ==========================================
+// GET DATA
+// ==========================================
+
+
+export const getData = (key)=>{
+
+
+  try{
+
+
+    const data =
+      localStorage.getItem(key);
+
+
+
+    if(!data)
+      return [];
+
+
+
+    return JSON.parse(data);
+
+
+
   }
+  catch(error){
+
+
+    console.error(
+      `Storage read error: ${key}`,
+      error
+    );
+
+
+    return [];
+
+  }
+
+
 };
 
-export const saveData = (key, data) => {
-  localStorage.setItem(key, JSON.stringify(data));
+
+
+
+
+
+
+
+// ==========================================
+// SAVE DATA
+// ==========================================
+
+
+export const saveData = (
+  key,
+  data
+)=>{
+
+
+  try{
+
+
+    localStorage.setItem(
+
+      key,
+
+      JSON.stringify(data)
+
+    );
+
+
+    return true;
+
+
+
+  }
+  catch(error){
+
+
+    console.error(
+      `Storage save error: ${key}`,
+      error
+    );
+
+
+    return false;
+
+
+  }
+
+
 };
 
-// ================================
-// Users
-// ================================
 
-export const getUsers = () => {
-  return getData(STORAGE_KEYS.USERS);
+
+
+
+
+
+
+// ==========================================
+// REMOVE DATA
+// ==========================================
+
+
+export const removeData = (
+  key
+)=>{
+
+
+  localStorage.removeItem(key);
+
+
 };
 
-export const saveUsers = (users) => {
-  saveData(STORAGE_KEYS.USERS, users);
+
+
+
+
+
+
+
+// ==========================================
+// CLEAR STORAGE
+// ==========================================
+
+
+export const clearStorage =()=>{
+
+
+  localStorage.clear();
+
+
 };
 
-// ================================
-// Current User
-// ================================
 
-export const getCurrentUser = () => {
-  const user = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
 
-  return user ? JSON.parse(user) : null;
+
+
+
+
+
+// ==========================================
+// USERS
+// ==========================================
+
+
+export const getUsers =()=>{
+
+
+  return getData(
+    STORAGE_KEYS.USERS
+  );
+
+
 };
 
-export const setCurrentUser = (user) => {
-  localStorage.setItem(
+
+
+export const saveUsers =(
+  users
+)=>{
+
+
+  return saveData(
+
+    STORAGE_KEYS.USERS,
+
+    users
+
+  );
+
+
+};
+
+
+
+
+
+
+
+
+// ==========================================
+// CURRENT USER
+// ==========================================
+
+
+export const getCurrentUser =()=>{
+
+
+  const user =
+    localStorage.getItem(
+      STORAGE_KEYS.CURRENT_USER
+    );
+
+
+
+  return user
+    ? JSON.parse(user)
+    : null;
+
+
+};
+
+
+
+
+
+
+export const saveCurrentUser =(
+  user
+)=>{
+
+
+  return saveData(
+
     STORAGE_KEYS.CURRENT_USER,
-    JSON.stringify(user)
-  );
-};
 
-export const logoutCurrentUser = () => {
-  localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
-};
+    user
 
-// ================================
-// Donations
-// ================================
-
-export const getDonations = () => {
-  return getData(STORAGE_KEYS.DONATIONS);
-};
-
-export const saveDonation = (donation) => {
-  const donations = getDonations();
-
-  donations.unshift({
-    id: Date.now(),
-    ...donation,
-    createdAt: new Date().toISOString(),
-  });
-
-  saveData(STORAGE_KEYS.DONATIONS, donations);
-};
-
-// ================================
-// Volunteers
-// ================================
-
-export const getVolunteers = () => {
-  return getData(STORAGE_KEYS.VOLUNTEERS);
-};
-
-export const saveVolunteer = (volunteer) => {
-  const volunteers = getVolunteers();
-
-  volunteers.unshift({
-    id: Date.now(),
-    status: "Pending",
-    ...volunteer,
-    createdAt: new Date().toISOString(),
-  });
-
-  saveData(STORAGE_KEYS.VOLUNTEERS, volunteers);
-};
-
-// ================================
-// Contact Messages
-// ================================
-
-export const getMessages = () => {
-  return getData(STORAGE_KEYS.CONTACTS);
-};
-
-export const saveMessage = (message) => {
-  const messages = getMessages();
-
-  messages.unshift({
-    id: Date.now(),
-    ...message,
-    createdAt: new Date().toISOString(),
-  });
-
-  saveData(STORAGE_KEYS.CONTACTS, messages);
-};
-
-// ================================
-// Campaigns
-// ================================
-
-export const getCampaigns = () => {
-  return getData(STORAGE_KEYS.CAMPAIGNS);
-};
-
-export const saveCampaigns = (campaigns) => {
-  saveData(STORAGE_KEYS.CAMPAIGNS, campaigns);
-};
-
-// ================================
-// Dashboard Statistics
-// ================================
-
-export const getDashboardStats = () => {
-  const users = getUsers();
-  const donations = getDonations();
-  const volunteers = getVolunteers();
-  const campaigns = getCampaigns();
-
-  const totalAmount = donations.reduce(
-    (sum, item) => sum + Number(item.amount || 0),
-    0
   );
 
-  return {
-    totalUsers: users.length,
-    totalDonations: donations.length,
-    totalDonationAmount: totalAmount,
-    totalVolunteers: volunteers.length,
-    totalCampaigns: campaigns.length,
-  };
+
+};
+
+
+
+
+
+
+export const removeCurrentUser =()=>{
+
+
+  removeData(
+    STORAGE_KEYS.CURRENT_USER
+  );
+
+
+};
+
+
+
+
+
+
+
+
+// ==========================================
+// DONATIONS
+// ==========================================
+
+
+export const getDonations =()=>{
+
+
+  return getData(
+    STORAGE_KEYS.DONATIONS
+  );
+
+
+};
+
+
+
+
+
+
+export const saveDonations =(
+  donations
+)=>{
+
+
+  return saveData(
+
+    STORAGE_KEYS.DONATIONS,
+
+    donations
+
+  );
+
+
+};
+
+
+
+
+
+
+
+
+// ==========================================
+// VOLUNTEERS
+// ==========================================
+
+
+export const getVolunteers =()=>{
+
+
+  return getData(
+    STORAGE_KEYS.VOLUNTEERS
+  );
+
+
+};
+
+
+
+
+
+
+export const saveVolunteers =(
+  volunteers
+)=>{
+
+
+  return saveData(
+
+    STORAGE_KEYS.VOLUNTEERS,
+
+    volunteers
+
+  );
+
+
+};
+
+
+
+
+
+
+
+
+// ==========================================
+// CONTACT MESSAGES
+// ==========================================
+
+
+export const getContacts =()=>{
+
+
+  return getData(
+    STORAGE_KEYS.CONTACTS
+  );
+
+
+};
+
+
+
+
+
+
+export const saveContacts =(
+  messages
+)=>{
+
+
+  return saveData(
+
+    STORAGE_KEYS.CONTACTS,
+
+    messages
+
+  );
+
+
+};
+
+
+
+
+
+
+
+
+// ==========================================
+// CAMPAIGNS
+// ==========================================
+
+
+export const getCampaigns =()=>{
+
+
+  return getData(
+    STORAGE_KEYS.CAMPAIGNS
+  );
+
+
+};
+
+
+
+
+
+
+export const saveCampaigns =(
+  campaigns
+)=>{
+
+
+  return saveData(
+
+    STORAGE_KEYS.CAMPAIGNS,
+
+    campaigns
+
+  );
+
+
+};
+
+
+
+
+
+
+
+
+// ==========================================
+// ADMIN LOGS
+// ==========================================
+// Used to track admin activity
+// Example:
+// Deleted user
+// Approved volunteer
+// Updated campaign
+// ==========================================
+
+
+export const getAdminLogs =()=>{
+
+
+  return getData(
+    STORAGE_KEYS.ADMIN_LOGS
+  );
+
+
+};
+
+
+
+
+
+
+export const saveAdminLogs =(
+  logs
+)=>{
+
+
+  return saveData(
+
+    STORAGE_KEYS.ADMIN_LOGS,
+
+    logs
+
+  );
+
+
 };

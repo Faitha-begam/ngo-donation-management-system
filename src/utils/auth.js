@@ -4,10 +4,6 @@
 const USERS_KEY = "users";
 const CURRENT_USER_KEY = "currentUser";
 
-
-
-
-
 /*
 --------------------------------
 GET ALL USERS

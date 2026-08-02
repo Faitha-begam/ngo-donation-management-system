@@ -1,116 +1,60 @@
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
-
 export const downloadCertificate = async (donation) => {
-
-  const certificate =
-    document.getElementById("certificate");
-
-
-  if (!certificate) {
-    alert("Certificate not found");
-    return;
-  }
-
-
 
   try {
 
+    const certificate = document.getElementById("certificate");
 
-    await document.fonts.ready;
+    if (!certificate) {
+      throw new Error("Certificate element not found.");
+    }
 
+    // Wait until fonts are loaded
+    if (document.fonts) {
+      await document.fonts.ready;
+    }
 
+    const canvas = await html2canvas(certificate, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: "#ffffff",
+      logging: false,
+      removeContainer: true,
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: certificate.scrollWidth,
+      windowHeight: certificate.scrollHeight,
+    });
 
-    const canvas = await html2canvas(
-      certificate,
-      {
-        scale: 2,
+    const imgData = canvas.toDataURL("image/png");
 
-        useCORS:true,
-
-        backgroundColor:"#ffffff",
-
-        logging:false,
-
-        width:1123,
-
-        height:794,
-      }
-    );
-
-
-
-
-    const image =
-      canvas.toDataURL(
-        "image/png",
-        1.0
-      );
-
-
-
-
-
-    const pdf =
-      new jsPDF({
-
-        orientation:"landscape",
-
-        unit:"px",
-
-        format:[
-          1123,
-          794
-        ]
-
-      });
-
-
-
-
+    const pdf = new jsPDF({
+      orientation: "landscape",
+      unit: "px",
+      format: [canvas.width, canvas.height],
+    });
 
     pdf.addImage(
-      image,
+      imgData,
       "PNG",
       0,
       0,
-      1123,
-      794
+      canvas.width,
+      canvas.height
     );
 
+    const safeName =
+      (donation?.name || "Donor").replace(/[^a-zA-Z0-9]/g, "-");
 
+    pdf.save(`HOPE-NGO-Certificate-${safeName}.pdf`);
 
+  } catch (error) {
 
+    console.error("Certificate Download Error:", error);
 
-    const name =
-      donation.name
-      ?.replace(/\s+/g,"-")
-      ||
-      "Donor";
-
-
-
-
-    pdf.save(
-      `HOPE-NGO-Certificate-${name}.pdf`
-    );
-
-
-
+    alert(`Download failed:\n${error.message}`);
   }
-
-  catch(error){
-
-    console.error(
-      "PDF Error:",
-      error
-    );
-
-    alert(
-      "Certificate download failed"
-    );
-
-  }
-
 };

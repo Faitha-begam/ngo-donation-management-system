@@ -507,72 +507,49 @@ export default function Donate(){
 
 
 
-    const donationDetails={
+    const user = getCurrentUser();
 
+const donationDetails = {
 
+  id:
+  "NGO" + Date.now(),
 
-      id:
-      "NGO"+Date.now(),
+  donorId:
+  user?.id || null,
 
+  name:
+  formData.fullName,
 
+  email:
+  formData.email,
 
-      name:
-      formData.fullName,
+  phone:
+  formData.phone,
 
+  amount:
+  Number(formData.amount),
 
+  campaign:
+  formData.campaign,
 
-      email:
-      formData.email,
+  frequency:
+  formData.frequency,
 
+  paymentMethod:
+  formData.paymentMethod,
 
+  message:
+  formData.message,
 
-      phone:
-      formData.phone,
+  status:
+  "Completed",
 
+  createdAt:
+  new Date().toISOString()
 
+};
 
-      amount:
-      Number(formData.amount),
-
-
-
-      campaign:
-      formData.campaign,
-
-
-
-      frequency:
-      formData.frequency,
-
-
-
-      paymentMethod:
-      formData.paymentMethod,
-
-
-
-      message:
-      formData.message,
-
-
-
-      status:
-      "Completed",
-
-
-
-      date:
-      new Date().toISOString()
-
-
-    };
-
-
-
-
-
-
-
+console.log("NEW DONATION OBJECT", donationDetails);
     // Save all donations for admin
 
 
@@ -611,9 +588,7 @@ export default function Donate(){
 // Save donation inside user profile + activity
 
 
-const user = getCurrentUser();
-
-
+// Save donation inside user profile + update users database
 
 if(user){
 
@@ -622,7 +597,6 @@ if(user){
 
 
     ...user,
-
 
 
     donations:[
@@ -638,44 +612,34 @@ if(user){
 
 
 
-
     activities:[
-
 
 
       {
 
-
         id:
         Date.now(),
-
 
 
         title:
         "Donation Completed",
 
 
-
         description:
         `Donated ₹${donationDetails.amount.toLocaleString()} to ${donationDetails.campaign}`,
-
 
 
         date:
         new Date().toISOString()
 
 
-
       },
-
 
 
       ...(user.activities || [])
 
 
-
     ]
-
 
 
   };
@@ -683,10 +647,52 @@ if(user){
 
 
 
+
+  // update current logged in user
+
   updateCurrentUser(
     updatedUser
   );
 
+
+
+
+
+  // update users array for admin dashboard
+
+  const users =
+  JSON.parse(
+    localStorage.getItem("users")
+  ) || [];
+
+
+
+
+
+  const updatedUsers =
+  users.map(existingUser=>{
+
+
+    if(existingUser.id === user.id){
+
+      return updatedUser;
+
+    }
+
+
+    return existingUser;
+
+
+  });
+
+
+
+
+
+  localStorage.setItem(
+    "users",
+    JSON.stringify(updatedUsers)
+  );
 
 
 }

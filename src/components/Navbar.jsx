@@ -42,12 +42,12 @@ export default function Navbar() {
 
 
   const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "Campaigns", path: "/campaigns" },
-    { name: "Donate", path: "/donate" },
-    { name: "Volunteer", path: "/volunteer" },
-    { name: "Contact", path: "/contact" },
-  ];
+  { name: "Home", path: "/" },
+  { name: "Campaigns", path: "/campaigns" },
+  { name: "Donate", path: "/donate" },
+  { name: "Volunteer", path: "/volunteer" },
+  { name: "Contact", path: "/contact" },
+];
 
 
 
@@ -56,7 +56,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 bg-[#7A866E] shadow-lg">
 
 
-      <nav className="max-w-7xl mx-auto flex items-center justify-between px-2 lg:px-10 py-4">
+      <nav className="max-w-7xl mx-auto flex items-center justify-start px-2 lg:px-10 py-4">
 
 
 
