@@ -1,10 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
+import L from "leaflet";
+import { Crosshair, MapPin } from "lucide-react";
+import "leaflet/dist/leaflet.css";
 
 import { getCurrentUser, getUsers } from "../utils/auth";
 import { createEmergencyRequest } from "../utils/emergencyStorage";
 import { createNotification } from "../utils/notificationStorage";
+import { INDIA_CENTER } from "../utils/emergencyMap";
 
 const INITIAL_FORM_DATA = {
   title: "",
@@ -15,6 +20,8 @@ const INITIAL_FORM_DATA = {
   helpType: "",
   amountRequired: "",
   requiredItems: "",
+  latitude: "",
+  longitude: "",
 };
 
 const FIELD_LABELS = {
@@ -26,12 +33,15 @@ const FIELD_LABELS = {
   helpType: "Help type",
   amountRequired: "Amount required",
   requiredItems: "Required items",
+  latitude: "Location pin",
+  longitude: "Location pin",
 };
 
 export default function CreateEmergencyRequest() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [errors, setErrors] = useState({});
+  const [isGeocoding, setIsGeocoding] = useState(false);
 
   const updateField = (field, value) => {
     setFormData((current) => ({ ...current, [field]: value }));
@@ -56,9 +66,20 @@ export default function CreateEmergencyRequest() {
     ) {
       nextErrors.amountRequired = "Enter a valid amount greater than zero.";
     }
+    if (!formData.latitude || !formData.longitude || !Number.isFinite(Number(formData.latitude)) || !Number.isFinite(Number(formData.longitude))) nextErrors.latitude = "Choose a map location or use the city lookup.";
 
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
+  };
+
+  const chooseCurrentLocation = () => {
+    if (!navigator.geolocation) return toast.error("Location services are not available in this browser.");
+    navigator.geolocation.getCurrentPosition(({ coords }) => { updateField("latitude", coords.latitude.toFixed(6)); updateField("longitude", coords.longitude.toFixed(6)); toast.success("Location pin added."); }, () => toast.error("Unable to access your location. You can choose a point on the map instead."), { enableHighAccuracy: true, timeout: 10000 });
+  };
+  const lookupLocation = async () => {
+    if (!formData.location.trim()) return setErrors((current) => ({ ...current, location: "Enter a city or area before looking it up." }));
+    setIsGeocoding(true);
+    try { const response = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(formData.location)}`); const result = await response.json(); if (!result[0]) throw new Error("No match"); updateField("latitude", Number(result[0].lat).toFixed(6)); updateField("longitude", Number(result[0].lon).toFixed(6)); toast.success("Location found. You can fine-tune the pin on the map."); } catch { toast.error("We could not find that location. Please place the pin manually."); } finally { setIsGeocoding(false); }
   };
 
   const handleSubmit = (event) => {
@@ -87,6 +108,8 @@ export default function CreateEmergencyRequest() {
       helpType: formData.helpType,
       amountRequired: Number(formData.amountRequired),
       requiredItems: formData.requiredItems.trim(),
+      latitude: Number(formData.latitude),
+      longitude: Number(formData.longitude),
     });
 
     const priorityByUrgency = {
@@ -163,12 +186,7 @@ export default function CreateEmergencyRequest() {
             </FormField>
 
             <FormField label="Location" error={errors.location}>
-              <input
-                value={formData.location}
-                onChange={(event) => updateField("location", event.target.value)}
-                className={fieldClassName("location")}
-                placeholder="City, area, or community"
-              />
+              <div className="flex gap-2"><input value={formData.location} onChange={(event) => updateField("location", event.target.value)} className={fieldClassName("location")} placeholder="City, area, or community" /><button type="button" onClick={lookupLocation} disabled={isGeocoding} className="shrink-0 rounded-xl bg-[#66785F] px-3 text-xs font-bold text-white disabled:opacity-60">{isGeocoding ? "Finding…" : "Find pin"}</button></div>
             </FormField>
 
             <FormField label="Urgency" error={errors.urgency}>
@@ -212,6 +230,9 @@ export default function CreateEmergencyRequest() {
           </div>
 
           <div className="mt-6 grid gap-6">
+            <FormField label="Emergency location pin" error={errors.latitude}>
+              <div className="overflow-hidden rounded-2xl border border-[#DCCFC0] bg-white"><div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#F0E7DB] p-3"><p className="text-xs text-gray-600">Click the map to place an exact pin. Your written location remains visible to everyone.</p><button type="button" onClick={chooseCurrentLocation} className="inline-flex items-center gap-1 rounded-full border border-[#66785F] px-3 py-1.5 text-xs font-bold text-[#66785F]"><Crosshair className="h-3.5 w-3.5" />Use my location</button></div><LocationPicker latitude={formData.latitude} longitude={formData.longitude} onChange={(lat, lng) => { updateField("latitude", lat.toFixed(6)); updateField("longitude", lng.toFixed(6)); }} /><p className="flex items-center gap-1 p-3 text-xs text-gray-500"><MapPin className="h-3.5 w-3.5" />{formData.latitude ? `${formData.latitude}, ${formData.longitude}` : "No pin selected"}</p></div>
+            </FormField>
             <FormField label="Description" error={errors.description}>
               <textarea
                 rows="5"
@@ -253,4 +274,11 @@ function FormField({ label, error, children }) {
       {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
     </label>
   );
+}
+
+function LocationPicker({ latitude, longitude, onChange }) {
+  const position = latitude && longitude ? [Number(latitude), Number(longitude)] : INDIA_CENTER;
+  const pinIcon = L.divIcon({ className: "hope-map-marker", html: '<span style="background:#66785F"></span>', iconSize: [26, 26], iconAnchor: [13, 13] });
+  function ClickHandler() { useMapEvents({ click(event) { onChange(event.latlng.lat, event.latlng.lng); } }); return null; }
+  return <MapContainer center={position} zoom={latitude ? 12 : 5} className="h-64 w-full" scrollWheelZoom><TileLayer attribution="&copy; OpenStreetMap contributors" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" /><ClickHandler />{latitude && longitude && <Marker position={position} icon={pinIcon} />}</MapContainer>;
 }

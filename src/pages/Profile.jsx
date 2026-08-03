@@ -1,11 +1,15 @@
 // pages/Profile.jsx
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   getCurrentUser,
   updateCurrentUser
 } from "../utils/auth";
+import { getEmergencyRequests } from "../utils/emergencyStorage";
+import { calculateEmergencyTrustScore } from "../utils/trustScore";
+import HopeBadge from "../components/HopeBadge";
+import { calculateRank, getHopePoints, HOPE_POINTS_UPDATED } from "../utils/hopePoints";
 
 
 
@@ -33,6 +37,20 @@ const Profile = () => {
 
   const [message,setMessage] =
   useState("");
+
+  const [, setRefreshVersion] = useState(0);
+
+  useEffect(() => {
+    const refreshProfileData = () => setRefreshVersion((version) => version + 1);
+    window.addEventListener(HOPE_POINTS_UPDATED, refreshProfileData);
+    window.addEventListener("emergencyRequestsUpdated", refreshProfileData);
+    window.addEventListener("storage", refreshProfileData);
+    return () => {
+      window.removeEventListener(HOPE_POINTS_UPDATED, refreshProfileData);
+      window.removeEventListener("emergencyRequestsUpdated", refreshProfileData);
+      window.removeEventListener("storage", refreshProfileData);
+    };
+  }, [currentUser?.id]);
 
 
 
@@ -151,6 +169,33 @@ const Profile = () => {
   currentUser.joinedDate ||
 
   currentUser.createdAt;
+
+  const emergencyRequests = getEmergencyRequests();
+  const createdEmergencyRequests = emergencyRequests.filter(
+    request => String(request.creatorId) === String(currentUser.id)
+  );
+  const completedEmergencyRequests = createdEmergencyRequests.filter(
+    request => request.status === "completed"
+  );
+  const helpProvided = emergencyRequests.reduce(
+    (total, request) => total + (request.supporters || []).filter(
+      supporter => String(supporter.userId) === String(currentUser.id)
+    ).length,
+    0
+  );
+  const averageTrustScore = createdEmergencyRequests.length
+    ? Math.round(createdEmergencyRequests.reduce(
+      (total, request) => total + calculateEmergencyTrustScore(request).score,
+      0
+    ) / createdEmergencyRequests.length)
+    : 0;
+  const trustLevel = averageTrustScore >= 70
+    ? "Trusted"
+    : averageTrustScore >= 40
+      ? "Building Trust"
+      : "New Contributor";
+  const hope = getHopePoints(currentUser.id);
+  const currentRank = calculateRank(hope.points);
 
 
 
@@ -280,6 +325,52 @@ currentUser.name
 }
 
 
+
+</div>
+
+
+
+{/* EMERGENCY ACTIVITY */}
+
+<div className="bg-white rounded-3xl shadow-lg p-8 mt-10">
+
+<h2 className="text-2xl font-bold text-[#3A4035] mb-6">
+
+Emergency Activity
+
+</h2>
+
+<div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+
+<EmergencyActivityCard label="Requests Created" value={createdEmergencyRequests.length} />
+<EmergencyActivityCard label="Requests Completed" value={completedEmergencyRequests.length} />
+<EmergencyActivityCard label="Help Provided" value={helpProvided} />
+<EmergencyActivityCard label="Trust Level" value={trustLevel} detail={`${averageTrustScore}% trust score`} />
+
+</div>
+
+</div>
+
+
+{/* COMMUNITY IMPACT */}
+
+<div className="bg-gradient-to-br from-[#2E332B] to-[#66785F] rounded-3xl shadow-xl p-8 mt-8 text-white">
+
+<div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+  <div>
+    <p className="text-[#DCCFC0] font-semibold uppercase tracking-wider text-sm">Community Impact</p>
+    <h2 className="text-3xl font-bold mt-2">Your Hope Journey</h2>
+  </div>
+  <HopeBadge points={hope.points} />
+</div>
+
+<div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 mt-8">
+  <ImpactStatistic label="Total Donations" value={currentUser.donations?.length || 0} />
+  <ImpactStatistic label="Emergency Help" value={helpProvided} />
+  <ImpactStatistic label="Volunteer Activity" value={currentUser.volunteerStatus === "Approved" ? "Active" : "Not active"} />
+  <ImpactStatistic label="Hope Points" value={hope.points} />
+  <ImpactStatistic label="Current Rank" value={currentRank} />
+</div>
 
 </div>
 
@@ -1045,3 +1136,18 @@ No recent activity found.
 
 
 export default Profile;
+
+const EmergencyActivityCard = ({ label, value, detail }) => (
+  <div className="rounded-2xl border border-[#DCCFC0] bg-[#F8F6F1] p-5">
+    <p className="text-sm text-gray-500">{label}</p>
+    <p className="mt-2 text-2xl font-bold text-[#7A866E]">{value}</p>
+    {detail && <p className="mt-1 text-xs text-gray-500">{detail}</p>}
+  </div>
+);
+
+const ImpactStatistic = ({ label, value }) => (
+  <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
+    <p className="text-xs text-white/65">{label}</p>
+    <p className="mt-2 text-lg font-bold">{value}</p>
+  </div>
+);

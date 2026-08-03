@@ -1,5 +1,6 @@
 import {
   useMemo,
+  useEffect,
   useState,
 } from "react";
 
@@ -32,6 +33,7 @@ import {
 
 
 import CertificatePreview from "../components/CertificatePreview";
+import { addHopePoints } from "../utils/hopePoints";
 
 
 
@@ -310,6 +312,17 @@ const DonationSuccess = () => {
     showCertificate,
     setShowCertificate
   ] = useState(false);
+
+  useEffect(() => {
+    if (donation.donorId) {
+      addHopePoints(
+        donation.donorId,
+        10,
+        "Donation completed",
+        `donation:${donation.id}`
+      );
+    }
+  }, [donation.donorId, donation.id]);
 
 
 

@@ -10,6 +10,7 @@ import {
   getData,
   saveData,
 } from "./storage";
+import { addHopePoints } from "./hopePoints";
 
 
 /*
@@ -2567,4 +2568,23 @@ export const getDashboardSummary = () => {
   };
 
 
+};
+
+export const updateVolunteerStatus = (userId, status) => {
+  const users = getUsers();
+  const user = users.find((item) => String(item.id) === String(userId));
+
+  if (!user) {
+    return null;
+  }
+
+  const wasApproved = user.volunteerStatus === "Approved";
+  const updatedUser = { ...user, volunteerStatus: status };
+  saveUsers(users.map((item) => String(item.id) === String(userId) ? updatedUser : item));
+
+  if (status === "Approved" && !wasApproved) {
+    addHopePoints(userId, 15, "Volunteer application approved", `volunteer-approved:${userId}`);
+  }
+
+  return updatedUser;
 };

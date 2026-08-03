@@ -4,6 +4,7 @@ import { getUsers } from "../../utils/auth";
 
 import DonorTable from "../../components/admin/DonorTable";
 import UserDetailsModal from "../../components/admin/UserDetailsModal";
+import EmergencyManagement from "./EmergencyManagement";
 
 import toast from "react-hot-toast";
 
@@ -381,6 +382,8 @@ const AdminDashboard = () => {
 
 
         </div>
+
+        <EmergencyManagement />
 
 
 

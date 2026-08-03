@@ -1,2 +1,5 @@
-@import 'tailwindcss'
+@import 'tailwindcss';
+
+.hope-map-marker { background: transparent; border: 0; }
+.hope-map-marker span { display: block; width: 22px; height: 22px; border: 3px solid white; border-radius: 999px 999px 999px 0; box-shadow: 0 2px 7px rgba(46, 51, 43, .38); transform: rotate(-45deg); }
 

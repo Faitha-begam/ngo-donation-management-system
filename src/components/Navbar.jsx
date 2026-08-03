@@ -1,255 +1,917 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
+import {
+  ChevronDown,
+  Menu,
+  X,
+  UserRound,
+  LogOut,
+  ShieldCheck,
+  HeartHandshake,
+  Award,
+  PlusCircle,
+  Map,
+} from "lucide-react";
+import { motion } from "framer-motion";
+
 import logo from "../assets/Banner.png";
 import { getCurrentUser, logoutUser } from "../utils/auth";
 import NotificationBell from "./NotificationBell";
 
+
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [user, setUser] = useState(null);
+
+
+  const [menuOpen,setMenuOpen] = useState(false);
+  const [communityOpen,setCommunityOpen] = useState(false);
+  const [userOpen,setUserOpen] = useState(false);
+  const [user,setUser] = useState(null);
+
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    setUser(getCurrentUser());
-  }, []);
 
-  const handleLogout = () => {
+  const communityRef = useRef();
+  const userRef = useRef();
+
+
+
+  useEffect(()=>{
+
+    setUser(
+      getCurrentUser()
+    );
+
+  },[]);
+
+
+
+  useEffect(()=>{
+
+
+    const closeDropdown = (e)=>{
+
+
+      if(
+        communityRef.current &&
+        !communityRef.current.contains(e.target)
+      ){
+
+        setCommunityOpen(false);
+
+      }
+
+
+      if(
+        userRef.current &&
+        !userRef.current.contains(e.target)
+      ){
+
+        setUserOpen(false);
+
+      }
+
+
+    };
+
+
+    document.addEventListener(
+      "mousedown",
+      closeDropdown
+    );
+
+
+    return ()=>{
+
+      document.removeEventListener(
+        "mousedown",
+        closeDropdown
+      );
+
+    };
+
+
+  },[]);
+
+
+
+
+  const handleLogout=()=>{
+
     logoutUser();
+
     setUser(null);
-    setDropdownOpen(false);
+
+    setUserOpen(false);
+
     setMenuOpen(false);
+
     navigate("/");
+
   };
 
-  const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "Campaigns", path: "/campaigns" },
-    { name: "Donate", path: "/donate" },
-    { name: "Volunteer", path: "/volunteer" },
-    { name: "Emergency Requests", path: "/emergency-requests" },
-    { name: "Contact", path: "/contact" },
+
+
+  const mainLinks=[
+
+    {
+      name:"Home",
+      path:"/"
+    },
+
+    {
+      name:"Campaigns",
+      path:"/campaigns"
+    },
+
+    {
+      name:"Donate",
+      path:"/donate"
+    },
+
+    {
+      name:"Volunteer",
+      path:"/volunteer"
+    },
+
+    {
+      name:"Contact",
+      path:"/contact"
+    }
+
   ];
 
+
+
+  const communityLinks=[
+
+    {
+      name:"Emergency Requests",
+      path:"/emergency-requests",
+      icon:HeartHandshake
+    },
+
+
+    {
+      name:"Create Request",
+      path:"/create-emergency-request",
+      icon:PlusCircle,
+      auth:true
+    },
+
+
+    {
+      name:"Community Heroes",
+      path:"/community-heroes",
+      icon:Award
+    },
+    {
+      name:"Hope Map",
+      path:"/hope-map",
+      icon:Map
+    }
+
+  ];
+
+
+
   return (
-    <header className="sticky top-0 z-50 bg-[#7A866E] shadow-lg">
-      <nav className="max-w-7xl mx-auto flex items-center justify-start px-2 lg:px-10 py-4">
 
-        {/* Logo */}
 
-        <Link
-          to="/"
-          className="flex items-center"
-        >
-          <img
-            src={logo}
-            alt="HopeBridge Logo"
-            className="h-15 w-15 rounded-full"
-          />
+<header
+className="
+sticky
+top-0
+z-50
+bg-[#7A866E]/90
+backdrop-blur-lg
+shadow-lg
+"
+>
 
-          <h1 className="text-3xl font-bold text-[#F5F1E8] ml-2">
-            Hope
-            <span className="text-[#DCCFC0]">
-              Bridge
-            </span>
-          </h1>
-        </Link>
 
-        {/* Desktop Navigation */}
+<nav
+className="
+max-w-7xl
+mx-auto
+flex
+items-center
+justify-between
+px-5
+lg:px-8
+py-3
+"
+>
 
-        <ul className="hidden md:flex items-center gap-8">
 
-          {navLinks.map((item) => (
-            <li key={item.name}>
-              <NavLink
-                to={item.path}
-                className={({ isActive }) =>
-                  `font-medium px-3 py-2 rounded-lg transition-all duration-300 ${
-                    isActive
-                      ? "bg-[#DCCFC0] text-[#3A4035]"
-                      : "text-[#F5F1E8] hover:bg-[#DCCFC0] hover:text-[#3A4035]"
-                  }`
-                }
-              >
-                {item.name}
-              </NavLink>
-            </li>
-          ))}
 
-          {!user ? (
-            <>
-              <li>
-                <NavLink
-                  to="/login"
-                  className="text-[#F5F1E8] font-medium px-3 py-2 rounded-lg hover:bg-[#DCCFC0] hover:text-[#3A4035]"
-                >
-                  Login
-                </NavLink>
-              </li>
+{/* LOGO */}
 
-              <li>
-                <NavLink
-                  to="/register"
-                  className="text-[#F5F1E8] font-medium px-3 py-2 rounded-lg hover:bg-[#DCCFC0] hover:text-[#3A4035]"
-                >
-                  Register
-                </NavLink>
-              </li>
-            </>
-          ) : (
-            <li className="relative">
 
-              <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2 text-[#F5F1E8]"
-              >
-                <div className="w-10 h-10 rounded-full bg-[#DCCFC0] text-[#3A4035] flex items-center justify-center font-bold">
-                  {user.name?.charAt(0).toUpperCase()}
-                </div>
+<Link
+to="/"
+className="
+flex
+items-center
+shrink-0
+"
+>
 
-                <span>{user.name}</span>
-              </button>
 
-              {dropdownOpen && (
-                <div className="absolute right-0 mt-3 w-48 bg-white rounded-lg shadow-xl overflow-hidden">
-                                    {user.role === "admin" ? (
-                    <Link
-                      to="/admin"
-                      onClick={() => setDropdownOpen(false)}
-                      className="block px-5 py-3 text-gray-700 hover:bg-gray-100"
-                    >
-                      Admin Dashboard
-                    </Link>
-                  ) : (
-                    <Link
-                      to="/profile"
-                      onClick={() => setDropdownOpen(false)}
-                      className="block px-5 py-3 text-gray-700 hover:bg-gray-100"
-                    >
-                      Profile
-                    </Link>
-                  )}
+<img
 
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left px-5 py-3 text-red-600 hover:bg-red-50"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
-            </li>
-          )}
-        </ul>
+src={logo}
 
-        <NotificationBell />
+alt="HopeBridge"
 
-        {/* Donate Button */}
+className="
+h-12
+w-12
+rounded-full
+"
 
-        <Link
-          to="/donate"
-          className="hidden md:block bg-[#DCCFC0] text-[#3A4035] px-15 py-3 mx-5 rounded-full font-semibold transition duration-300 hover:bg-[#F5F1E8]"
-        >
-          Donate
-        </Link>
+>
 
-        {/* Mobile Menu Button */}
 
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden text-[#F5F1E8] text-3xl"
-        >
-          {menuOpen ? "✕" : "☰"}
-        </button>
+</img>
 
-      </nav>
 
-      {/* Mobile Menu */}
+<h1
+className="
+ml-2
+text-2xl
+font-bold
+text-[#F5F1E8]
+"
+>
 
-      {menuOpen && (
-        <div className="md:hidden bg-[#3A4035] border-t border-[#DCCFC0]">
-          <ul className="flex flex-col gap-2 px-6 py-4">
+Hope
+<span className="text-[#DCCFC0]">
+Bridge
+</span>
 
-            {navLinks.map((item) => (
-              <li key={item.name}>
-                <NavLink
-                  to={item.path}
-                  onClick={() => setMenuOpen(false)}
-                  className={({ isActive }) =>
-                    `block rounded-lg px-4 py-3 transition duration-300 ${
-                      isActive
-                        ? "bg-[#DCCFC0] text-[#3A4035]"
-                        : "text-[#F5F1E8] hover:bg-[#DCCFC0] hover:text-[#3A4035]"
-                    }`
-                  }
-                >
-                  {item.name}
-                </NavLink>
-              </li>
-            ))}
+</h1>
 
-            {!user ? (
-              <>
-                <Link
-                  to="/login"
-                  onClick={() => setMenuOpen(false)}
-                  className="text-[#F5F1E8] px-4 py-3"
-                >
-                  Login
-                </Link>
 
-                <Link
-                  to="/register"
-                  onClick={() => setMenuOpen(false)}
-                  className="text-[#F5F1E8] px-4 py-3"
-                >
-                  Register
-                </Link>
-              </>
-            ) : (
-              <>
-                              {user.role === "admin" ? (
-                  <Link
-                    to="/admin"
-                    onClick={() => setMenuOpen(false)}
-                    className="text-[#F5F1E8] px-4 py-3"
-                  >
-                    Admin Dashboard
-                  </Link>
-                ) : (
-                  <Link
-                    to="/profile"
-                    onClick={() => setMenuOpen(false)}
-                    className="text-[#F5F1E8] px-4 py-3"
-                  >
-                    Profile
-                  </Link>
-                )}
+</Link>
 
-                <button
-                  onClick={handleLogout}
-                  className="text-left text-red-300 px-4 py-3"
-                >
-                  Logout
-                </button>
-              </>
-            )}
 
-            {/* Mobile Donate Button */}
 
-            <Link
-              to="/donate"
-              onClick={() => setMenuOpen(false)}
-              className="mt-2 rounded-full bg-[#DCCFC0] py-3 text-center font-semibold text-[#3A4035] transition duration-300 hover:bg-[#F5F1E8]"
-            >
-              Donate
-            </Link>
 
-          </ul>
-        </div>
-      )}
 
-    </header>
+
+{/* DESKTOP MENU */}
+
+
+<div
+className="
+hidden
+lg:flex
+items-center
+gap-2
+"
+>
+
+
+{
+mainLinks.map((item)=>(
+
+
+<NavLink
+
+key={item.name}
+
+to={item.path}
+
+className={({isActive})=>
+
+`
+px-3
+py-2
+rounded-lg
+text-sm
+font-medium
+transition
+
+${
+isActive
+
+?
+"bg-[#DCCFC0] text-[#3A4035]"
+
+:
+
+"text-[#F5F1E8] hover:bg-[#DCCFC0] hover:text-[#3A4035]"
+
+}
+
+`
+
+}
+
+>
+
+{item.name}
+
+</NavLink>
+
+
+))
+
+}
+
+
+
+
+{/* COMMUNITY DROPDOWN */}
+
+
+<div
+ref={communityRef}
+className="relative"
+>
+
+
+<button
+
+onClick={()=>setCommunityOpen(!communityOpen)}
+
+className="
+flex
+items-center
+gap-1
+px-3
+py-2
+rounded-lg
+text-sm
+font-medium
+text-[#F5F1E8]
+hover:bg-[#DCCFC0]
+hover:text-[#3A4035]
+"
+
+>
+
+Community
+
+<ChevronDown
+className={`
+h-4
+w-4
+transition
+${communityOpen?"rotate-180":""}
+`}
+/>
+
+</button>
+
+
+
+{
+communityOpen &&
+
+<motion.div
+
+initial={{
+opacity:0,
+y:-10
+}}
+
+animate={{
+opacity:1,
+y:0
+}}
+
+className="
+absolute
+top-12
+left-0
+w-60
+rounded-2xl
+bg-white
+shadow-xl
+p-2
+"
+
+>
+
+
+{
+communityLinks.map((item)=>{
+
+
+if(item.auth && !user)
+return null;
+
+
+const Icon=item.icon;
+
+
+return (
+
+<Link
+
+key={item.name}
+
+to={item.path}
+
+onClick={()=>setCommunityOpen(false)}
+
+className="
+flex
+items-center
+gap-3
+px-4
+py-3
+rounded-xl
+text-gray-700
+hover:bg-[#F5F1E8]
+"
+
+>
+
+
+<Icon
+className="
+h-5
+w-5
+text-[#66785F]
+"
+/>
+
+
+{item.name}
+
+
+</Link>
+
+
+)
+
+
+})
+
+}
+
+
+</motion.div>
+
+
+}
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+{/* RIGHT SIDE */}
+
+
+<div
+className="
+hidden
+lg:flex
+items-center
+gap-4
+"
+>
+
+
+<NotificationBell />
+
+
+
+<Link
+
+to="/donate"
+
+className="
+rounded-full
+bg-[#DCCFC0]
+px-5
+py-2
+text-sm
+font-semibold
+text-[#3A4035]
+hover:bg-[#F5F1E8]
+transition
+"
+
+>
+
+Donate
+
+</Link>
+
+
+
+
+{/* USER */}
+
+
+{
+!user ?
+
+
+<>
+
+<Link
+to="/login"
+className="
+text-[#F5F1E8]
+text-sm
+font-medium
+"
+>
+
+Login
+
+</Link>
+
+
+<Link
+to="/register"
+className="
+text-[#F5F1E8]
+text-sm
+font-medium
+"
+>
+
+Register
+
+</Link>
+
+</>
+
+
+:
+
+<div
+ref={userRef}
+className="relative"
+>
+
+
+<button
+
+onClick={()=>setUserOpen(!userOpen)}
+
+className="
+flex
+items-center
+gap-2
+text-[#F5F1E8]
+"
+
+>
+
+
+<div
+className="
+h-10
+w-10
+rounded-full
+bg-[#DCCFC0]
+text-[#3A4035]
+flex
+items-center
+justify-center
+font-bold
+"
+
+>
+
+{
+user.name
+?.charAt(0)
+.toUpperCase()
+}
+
+</div>
+
+
+</button>
+
+
+
+{
+userOpen &&
+
+
+<motion.div
+
+initial={{
+opacity:0,
+y:-10
+}}
+
+animate={{
+opacity:1,
+y:0
+}}
+
+className="
+absolute
+right-0
+mt-3
+w-52
+rounded-2xl
+bg-white
+shadow-xl
+overflow-hidden
+"
+
+>
+
+
+{
+user.role==="admin"
+
+
+?
+
+<Link
+to="/admin"
+className="
+flex
+gap-2
+items-center
+px-5
+py-3
+hover:bg-gray-100
+"
+>
+
+<ShieldCheck size={18}/>
+
+Admin Dashboard
+
+</Link>
+
+
+:
+
+<Link
+to="/profile"
+className="
+flex
+gap-2
+items-center
+px-5
+py-3
+hover:bg-gray-100
+"
+>
+
+<UserRound size={18}/>
+
+Profile
+
+</Link>
+
+}
+
+
+
+<button
+
+onClick={handleLogout}
+
+className="
+flex
+gap-2
+items-center
+w-full
+px-5
+py-3
+text-red-600
+hover:bg-red-50
+"
+
+>
+
+<LogOut size={18}/>
+
+Logout
+
+</button>
+
+
+
+</motion.div>
+
+
+}
+
+
+
+</div>
+
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+{/* MOBILE BUTTON */}
+
+
+<button
+
+onClick={()=>setMenuOpen(!menuOpen)}
+
+className="
+lg:hidden
+text-[#F5F1E8]
+"
+
+>
+
+
+{
+menuOpen
+?
+
+<X size={30}/>
+
+:
+
+<Menu size={30}/>
+
+}
+
+
+</button>
+
+
+
+</nav>
+
+
+
+
+
+{/* MOBILE MENU */}
+
+{
+menuOpen &&
+
+<motion.div
+
+initial={{
+height:0
+}}
+
+animate={{
+height:"auto"
+}}
+
+className="
+lg:hidden
+bg-[#3A4035]
+px-5
+py-5
+"
+
+>
+
+
+{
+
+mainLinks.map((item)=>(
+
+<NavLink
+
+key={item.name}
+
+to={item.path}
+
+onClick={()=>setMenuOpen(false)}
+
+className="
+block
+px-4
+py-3
+rounded-lg
+text-[#F5F1E8]
+hover:bg-[#DCCFC0]
+hover:text-[#3A4035]
+"
+
+>
+
+{item.name}
+
+</NavLink>
+
+
+))
+
+}
+
+
+
+
+<div
+className="
+mt-3
+border-t
+border-[#DCCFC0]/30
+pt-3
+"
+
+>
+
+
+{
+communityLinks.map((item)=>{
+
+
+if(item.auth && !user)
+return null;
+
+
+return (
+
+<Link
+
+key={item.name}
+
+to={item.path}
+
+onClick={()=>setMenuOpen(false)}
+
+className="
+block
+px-4
+py-3
+text-[#F5F1E8]
+"
+
+>
+
+{item.name}
+
+</Link>
+
+)
+
+
+})
+
+}
+
+
+</div>
+
+
+
+<Link
+
+to="/donate"
+
+className="
+block
+mt-3
+rounded-full
+bg-[#DCCFC0]
+py-3
+text-center
+font-semibold
+text-[#3A4035]
+"
+
+>
+
+Donate
+
+</Link>
+
+
+
+</motion.div>
+
+}
+
+
+
+</header>
+
+
   );
 }

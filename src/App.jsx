@@ -28,6 +28,8 @@ import DonationHistory from "./pages/DonationHistory";
 import CreateEmergencyRequest from "./pages/CreateEmergencyRequest";
 import EmergencyRequests from "./pages/EmergencyRequests";
 import EmergencyRequestDetails from "./pages/EmergencyRequestDetails";
+import CommunityHeroes from "./pages/CommunityHeroes";
+import HopeMap from "./pages/HopeMap";
 
 import AdminDashboard from "./components/admin/AdminDashboard";
 
@@ -105,6 +107,13 @@ const App = () => {
           path="/emergency-request/:id"
           element={<EmergencyRequestDetails />}
         />
+
+        <Route
+          path="/community-heroes"
+          element={<CommunityHeroes />}
+        />
+
+        <Route path="/hope-map" element={<HopeMap />} />
 
         <Route
           path="/donation-success"
