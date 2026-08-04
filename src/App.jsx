@@ -11,6 +11,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 
 import { getCurrentUser } from "./utils/auth";
+import { initializeRewardClaims } from "./utils/rewardClaims";
 
 // Pages
 import Home from "./pages/Home";
@@ -34,6 +35,8 @@ import HopeMap from "./pages/HopeMap";
 import AdminDashboard from "./components/admin/AdminDashboard";
 
 const App = () => {
+
+  initializeRewardClaims();
 
   const currentUser = getCurrentUser();
 

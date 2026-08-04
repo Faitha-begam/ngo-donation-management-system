@@ -1,5 +1,7 @@
 const HOPE_POINTS_KEY = "hopePoints";
 import { getCurrentUser, updateCurrentUser } from "./auth.js";
+import { createNotification } from "./notificationStorage";
+import { REWARD_MILESTONE } from "./rewardClaims";
 
 export const HOPE_POINTS_UPDATED = "hopePointsUpdated";
 
@@ -60,6 +62,9 @@ export const addHopePoints = (userId, points, reason, activityKey) => {
   }
 
   saveHopePoints(records);
+  if (currentRecord.points < REWARD_MILESTONE && updatedRecord.points >= REWARD_MILESTONE) {
+    createNotification({ userId, title: "Eligible for Reward", message: `You reached ${REWARD_MILESTONE} Hope Points and can claim your ₹20 reward.`, type: "reward", priority: "high" });
+  }
   const currentUser = getCurrentUser();
   if (currentUser && String(currentUser.id) === String(userId)) {
     updateCurrentUser({ ...currentUser, hopePoints: updatedRecord.points });

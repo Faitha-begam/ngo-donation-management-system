@@ -10,6 +10,7 @@ import { getEmergencyRequests } from "../utils/emergencyStorage";
 import { calculateEmergencyTrustScore } from "../utils/trustScore";
 import HopeBadge from "../components/HopeBadge";
 import { calculateRank, getHopePoints, HOPE_POINTS_UPDATED } from "../utils/hopePoints";
+import RewardClaimPanel from "../components/RewardClaimPanel";
 
 
 
@@ -231,7 +232,7 @@ py-10
 
 className="
 
-max-w-6xl
+max-w-7xl
 
 mx-auto
 
@@ -255,25 +256,25 @@ mx-auto
 
 className="
 
-bg-[#7A866E]
+bg-transparent
 
-rounded-3xl
+rounded-none
 
-p-8
+p-0
 
 text-white
 
-shadow-xl
+shadow-none
 
-flex
+grid
 
-flex-col
-
-md:flex-row
-
-items-center
+items-start
 
 gap-6
+
+md:grid-cols-2
+
+xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)_minmax(340px,0.9fr)]
 
 "
 
@@ -287,11 +288,14 @@ gap-6
 
 className="
 
-w-28
+hidden
 
-h-28
+w-full
 
-rounded-full
+min-h-44
+
+
+rounded-[2rem]
 
 bg-[#DCCFC0]
 
@@ -307,7 +311,7 @@ text-5xl
 
 font-bold
 
-shadow-lg
+shadow-xl
 
 "
 
@@ -328,19 +332,19 @@ currentUser.name
 
 </div>
 
-
-
 {/* EMERGENCY ACTIVITY */}
 
-<div className="bg-white rounded-3xl shadow-lg p-8 mt-10">
+<div className="h-full min-h-[28rem] rounded-[2rem] border border-[#DCCFC0] bg-white p-6 shadow-sm sm:p-7">
 
-<h2 className="text-2xl font-bold text-[#3A4035] mb-6">
+<p className="text-xs font-bold uppercase tracking-[.16em] text-[#66785F]">Community response</p>
+
+<h2 className="mt-2 text-2xl font-bold text-[#3A4035] mb-6">
 
 Emergency Activity
 
 </h2>
 
-<div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+<div className="grid grid-cols-2 gap-4">
 
 <EmergencyActivityCard label="Requests Created" value={createdEmergencyRequests.length} />
 <EmergencyActivityCard label="Requests Completed" value={completedEmergencyRequests.length} />
@@ -354,17 +358,17 @@ Emergency Activity
 
 {/* COMMUNITY IMPACT */}
 
-<div className="bg-gradient-to-br from-[#2E332B] to-[#66785F] rounded-3xl shadow-xl p-8 mt-8 text-white">
+<div className="h-full min-h-[28rem] rounded-[2rem] bg-gradient-to-br from-[#2E332B] to-[#66785F] p-6 text-white shadow-xl sm:p-7">
 
-<div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+<div className="flex items-start justify-between gap-4">
   <div>
     <p className="text-[#DCCFC0] font-semibold uppercase tracking-wider text-sm">Community Impact</p>
-    <h2 className="text-3xl font-bold mt-2">Your Hope Journey</h2>
+<h2 className="text-2xl font-bold mt-2">Your Hope Journey</h2>
   </div>
   <HopeBadge points={hope.points} />
 </div>
 
-<div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 mt-8">
+<div className="grid grid-cols-2 gap-3 mt-7">
   <ImpactStatistic label="Total Donations" value={currentUser.donations?.length || 0} />
   <ImpactStatistic label="Emergency Help" value={helpProvided} />
   <ImpactStatistic label="Volunteer Activity" value={currentUser.volunteerStatus === "Approved" ? "Active" : "Not active"} />
@@ -373,6 +377,8 @@ Emergency Activity
 </div>
 
 </div>
+
+<div className="md:col-span-2 xl:col-span-1 xl:col-start-3 xl:row-start-2"><RewardClaimPanel user={currentUser} points={hope.points} /></div>
 
 
 
@@ -384,20 +390,40 @@ Emergency Activity
 
 className="
 
+rounded-[2rem]
+
+md:col-span-2
+
+bg-[#7A866E]
+
+p-6
+
 text-center
 
-md:text-left
+text-white
+
+shadow-xl
+
+xl:col-start-3
+
+xl:row-start-1
+
+text-left
 
 "
 
 >
 
 
+<div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#DCCFC0] text-2xl font-bold text-[#3A4035] shadow-sm">
+{currentUser.name.charAt(0).toUpperCase()}
+</div>
+
 <h1
 
 className="
 
-text-4xl
+text-2xl
 
 font-bold
 
@@ -416,6 +442,10 @@ font-bold
 
 {currentUser.email}
 
+</p>
+
+<p className="mt-4 max-w-sm text-sm leading-6 text-white/75">
+  Supporting communities through every act of generosity and service.
 </p>
 
 
@@ -494,10 +524,10 @@ mt-8
 
 
 
-<div className="bg-white rounded-2xl p-6 shadow-lg">
+<div className="min-h-36 rounded-3xl border border-[#DCCFC0] bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg">
 
 
-<p className="text-gray-500">
+<p className="text-xs font-bold uppercase tracking-wide text-gray-500">
 
 Total Donations
 
@@ -1138,16 +1168,16 @@ No recent activity found.
 export default Profile;
 
 const EmergencyActivityCard = ({ label, value, detail }) => (
-  <div className="rounded-2xl border border-[#DCCFC0] bg-[#F8F6F1] p-5">
-    <p className="text-sm text-gray-500">{label}</p>
-    <p className="mt-2 text-2xl font-bold text-[#7A866E]">{value}</p>
+  <div className="min-h-28 rounded-2xl border border-[#DCCFC0] bg-[#F8F6F1] p-4 sm:p-5">
+    <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">{label}</p>
+    <p className="mt-3 text-2xl font-bold text-[#7A866E]">{value}</p>
     {detail && <p className="mt-1 text-xs text-gray-500">{detail}</p>}
   </div>
 );
 
 const ImpactStatistic = ({ label, value }) => (
-  <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
-    <p className="text-xs text-white/65">{label}</p>
-    <p className="mt-2 text-lg font-bold">{value}</p>
+  <div className="min-h-24 rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
+    <p className="text-xs font-semibold leading-4 text-white/65">{label}</p>
+    <p className="mt-3 break-words text-lg font-bold">{value}</p>
   </div>
 );

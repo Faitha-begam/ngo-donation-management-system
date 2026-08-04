@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
 import L from "leaflet";
-import { Crosshair, MapPin } from "lucide-react";
+import { Crosshair, MapPin, Trash2, Upload } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 
 import { getCurrentUser, getUsers } from "../utils/auth";
@@ -22,6 +22,7 @@ const INITIAL_FORM_DATA = {
   requiredItems: "",
   latitude: "",
   longitude: "",
+  supportingDescription: "", peopleAffected: "", contactName: "", contactPhone: "", landmark: "", needBy: "", videoLink: "",
 };
 
 const FIELD_LABELS = {
@@ -35,6 +36,7 @@ const FIELD_LABELS = {
   requiredItems: "Required items",
   latitude: "Location pin",
   longitude: "Location pin",
+  supportingDescription: "Supporting description", peopleAffected: "People affected", contactName: "Contact name", contactPhone: "Contact phone", landmark: "Nearest landmark", needBy: "Need by date and time",
 };
 
 export default function CreateEmergencyRequest() {
@@ -42,6 +44,7 @@ export default function CreateEmergencyRequest() {
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [errors, setErrors] = useState({});
   const [isGeocoding, setIsGeocoding] = useState(false);
+  const [evidencePhotos, setEvidencePhotos] = useState([]);
 
   const updateField = (field, value) => {
     setFormData((current) => ({ ...current, [field]: value }));
@@ -54,7 +57,8 @@ export default function CreateEmergencyRequest() {
   const validate = () => {
     const nextErrors = {};
 
-    Object.entries(formData).forEach(([field, value]) => {
+    ["title", "category", "description", "location", "urgency", "helpType", "amountRequired", "requiredItems", "supportingDescription", "peopleAffected", "contactName", "contactPhone", "landmark", "needBy"].forEach((field) => {
+      const value = formData[field];
       if (!String(value).trim()) {
         nextErrors[field] = `${FIELD_LABELS[field]} is required.`;
       }
@@ -70,6 +74,14 @@ export default function CreateEmergencyRequest() {
 
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
+  };
+
+  const addEvidence = (event) => {
+    const files = Array.from(event.target.files || []);
+    if (evidencePhotos.length + files.length > 5) return toast.error("You can upload up to five evidence photos.");
+    if (files.some((file) => !file.type.startsWith("image/"))) return toast.error("Please select image files only.");
+    Promise.all(files.map((file) => new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(file); }))).then((photos) => setEvidencePhotos((current) => [...current, ...photos])).catch(() => toast.error("One or more images could not be read."));
+    event.target.value = "";
   };
 
   const chooseCurrentLocation = () => {
@@ -110,6 +122,7 @@ export default function CreateEmergencyRequest() {
       requiredItems: formData.requiredItems.trim(),
       latitude: Number(formData.latitude),
       longitude: Number(formData.longitude),
+      evidencePhotos, supportingDescription: formData.supportingDescription.trim(), peopleAffected: Number(formData.peopleAffected), emergencyContact: { name: formData.contactName.trim(), phone: formData.contactPhone.trim() }, landmark: formData.landmark.trim(), needBy: formData.needBy, videoLink: formData.videoLink.trim(),
     });
 
     const priorityByUrgency = {
@@ -134,6 +147,7 @@ export default function CreateEmergencyRequest() {
 
     toast.success("Emergency request submitted successfully.");
     setFormData(INITIAL_FORM_DATA);
+    setEvidencePhotos([]);
   };
 
   const fieldClassName = (field) =>
@@ -227,6 +241,11 @@ export default function CreateEmergencyRequest() {
                 placeholder="0"
               />
             </FormField>
+            <FormField label="Number of people affected" error={errors.peopleAffected}><input type="number" min="1" value={formData.peopleAffected} onChange={(event) => updateField("peopleAffected", event.target.value)} className={fieldClassName("peopleAffected")} placeholder="e.g. 45" /></FormField>
+            <FormField label="Need by (date and time)" error={errors.needBy}><input type="datetime-local" value={formData.needBy} onChange={(event) => updateField("needBy", event.target.value)} className={fieldClassName("needBy")} /></FormField>
+            <FormField label="Emergency contact name" error={errors.contactName}><input value={formData.contactName} onChange={(event) => updateField("contactName", event.target.value)} className={fieldClassName("contactName")} placeholder="Contact person" /></FormField>
+            <FormField label="Emergency contact phone" error={errors.contactPhone}><input type="tel" value={formData.contactPhone} onChange={(event) => updateField("contactPhone", event.target.value)} className={fieldClassName("contactPhone")} placeholder="Phone number" /></FormField>
+            <FormField label="Nearest landmark" error={errors.landmark}><input value={formData.landmark} onChange={(event) => updateField("landmark", event.target.value)} className={fieldClassName("landmark")} placeholder="e.g. Government school" /></FormField>
           </div>
 
           <div className="mt-6 grid gap-6">
@@ -242,6 +261,9 @@ export default function CreateEmergencyRequest() {
                 placeholder="Explain the emergency and who needs support."
               />
             </FormField>
+            <FormField label="Supporting description" error={errors.supportingDescription}><textarea rows="5" value={formData.supportingDescription} onChange={(event) => updateField("supportingDescription", event.target.value)} className={fieldClassName("supportingDescription")} placeholder="How did this emergency happen? Who is affected? What help is already available?" /></FormField>
+            <FormField label="Evidence photos (1–5 images)"><label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-[#66785F] bg-white px-4 py-5 text-sm font-semibold text-[#66785F]"><Upload className="h-5 w-5" />Upload evidence photos<input type="file" accept="image/*" multiple className="sr-only" onChange={addEvidence} /></label>{evidencePhotos.length > 0 && <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-5">{evidencePhotos.map((photo, index) => <div key={photo} className="relative"><img src={photo} alt={`Evidence ${index + 1}`} className="h-24 w-full rounded-xl object-cover" /><button type="button" onClick={() => setEvidencePhotos((items) => items.filter((_, itemIndex) => itemIndex !== index))} className="absolute right-1 top-1 rounded-full bg-white p-1 text-red-600 shadow"><Trash2 className="h-3.5 w-3.5" /></button></div>)}</div>}</FormField>
+            <FormField label="Video link (optional)"><input type="url" value={formData.videoLink} onChange={(event) => updateField("videoLink", event.target.value)} className={fieldClassName("videoLink")} placeholder="YouTube or Google Drive link" /></FormField>
 
             <FormField label="Required Items" error={errors.requiredItems}>
               <textarea
