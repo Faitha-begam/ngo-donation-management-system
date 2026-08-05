@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const CampaignHero = () => {
   return (
     <section
@@ -81,7 +83,7 @@ const CampaignHero = () => {
         </p>
 
 
-        <button
+        <Link to="/campaigns"
           className="
             mt-10
             px-8
@@ -95,7 +97,7 @@ const CampaignHero = () => {
           "
         >
           Explore Campaigns
-        </button>
+        </Link>
 
 
       </div>

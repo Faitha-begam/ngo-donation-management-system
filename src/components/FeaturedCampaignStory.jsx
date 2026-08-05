@@ -1,4 +1,5 @@
 import campaigns from "../data/campaigns";
+import { Link } from "react-router-dom";
 
 const FeaturedCampaign = () => {
 
@@ -227,7 +228,7 @@ const FeaturedCampaign = () => {
 
 
 
-            <button
+            <Link to="/donate"
               className="
                 px-10
                 py-4
@@ -240,7 +241,7 @@ const FeaturedCampaign = () => {
               "
             >
               Support This Cause
-            </button>
+            </Link>
 
 
           </div>

@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const CampaignCard = ({ campaign }) => {
   const progress = Math.min(
     (campaign.raised / campaign.target) * 100,
@@ -218,7 +220,7 @@ const CampaignCard = ({ campaign }) => {
 
         <div className="mt-6">
 
-          <button
+          <Link to="/donate"
             className="
               bg-[#66785F]
               text-white
@@ -234,7 +236,7 @@ const CampaignCard = ({ campaign }) => {
             "
           >
             Donate Now
-          </button>
+          </Link>
 
         </div>
 

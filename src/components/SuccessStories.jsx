@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import story1 from "../assets/successstories/story1.jpg";
 import story2 from "../assets/successstories/story2.jpg";
@@ -159,9 +160,9 @@ const SuccessStories = () => {
           families in need. Every donation creates a brighter tomorrow.
         </p>
 
-        <button className="mt-10 bg-[#7A866E] hover:bg-[#66755A] text-white px-10 py-4 rounded-full text-lg font-semibold transition-all duration-300 hover:scale-105 shadow-xl">
+        <Link to="/donate" className="mt-10 inline-block bg-[#7A866E] hover:bg-[#66755A] text-white px-10 py-4 rounded-full text-lg font-semibold transition-all duration-300 hover:scale-105 shadow-xl">
           Donate Now
-        </button>
+        </Link>
       </div>
     </section>
   </>

@@ -55,7 +55,7 @@
       title: "Clean Water Initiative",
       category: "Environment",
       image:
-        "https://images.unsplash.com/photo-1547683905-f686c993aae5",
+        "https://images.unsplash.com/photo-1681745206993-17edc4613951",
       description:
         "Bring safe drinking water facilities to communities affected by water shortages.",
       story:
@@ -72,7 +72,7 @@
       title: "Support Elderly Care Homes",
       category: "Community",
       image:
-        "https://images.unsplash.com/photo-1581579438747-1dc8d17bbce4",
+        "https://images.unsplash.com/photo-1773227055624-07b515ba87c5",
       description:
         "Help provide care, food, and medical support for elderly people.",
       story:

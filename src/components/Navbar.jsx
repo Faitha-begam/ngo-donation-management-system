@@ -659,6 +659,8 @@ Admin Dashboard
 
 :
 
+<>
+
 <Link
 to="/profile"
 className="
@@ -676,6 +678,24 @@ hover:bg-gray-100
 Profile
 
 </Link>
+
+<Link
+to="/donations"
+className="
+flex
+gap-2
+items-center
+px-5
+py-3
+hover:bg-gray-100
+"
+>
+
+Donation History
+
+</Link>
+
+</>
 
 }
 

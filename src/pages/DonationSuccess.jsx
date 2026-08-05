@@ -1859,7 +1859,7 @@ const DonationSuccess = () => {
 
             <Link
 
-              to="/campaigns"
+              to="/donate"
 
               className="
                 border-2

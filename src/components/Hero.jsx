@@ -1,4 +1,4 @@
-import banner from "../assets/homeBanner.jpg";
+import banner from "../assets/heroImpact.png";
 import { Link } from "react-router-dom";
 
 const Hero = () => {
@@ -10,12 +10,14 @@ const Hero = () => {
         bg-no-repeat
         bg-cover
         bg-center 
+        md:bg-[length:auto_108%]
+        md:bg-right
+        bg-white
         flex
         items-center
       "
       style={{
         backgroundImage: `url(${banner})`,
-        backgroundPosition: "center 20%",
       }}
     >
       <div className="max-w-7xl mx-auto w-full px-6 lg:px-10">
@@ -45,9 +47,9 @@ const Hero = () => {
   Donate Now
 </Link>
 
-            <button className="border-2 border-[#7A866E] text-[#7A866E] px-8 py-3 rounded-full font-semibold hover:bg-[#7A866E] hover:text-white transition duration-300">
+            <Link to="/campaigns" className="border-2 border-[#7A866E] text-[#7A866E] px-8 py-3 rounded-full font-semibold hover:bg-[#7A866E] hover:text-white transition duration-300">
               Explore Campaigns
-            </button>
+            </Link>
           </div>
 
         </div>

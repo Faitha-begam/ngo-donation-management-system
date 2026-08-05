@@ -67,9 +67,9 @@ const FeaturedCampaigns = () => {
             </p>
           </div>
 
-          <button className="mt-6 md:mt-0 border-2 border-[#7A866E] text-[#7A866E] px-6 py-3 rounded-full font-semibold hover:bg-[#7A866E] hover:text-white transition duration-300">
+          <Link to="/campaigns" className="mt-6 md:mt-0 border-2 border-[#7A866E] text-[#7A866E] px-6 py-3 rounded-full font-semibold hover:bg-[#7A866E] hover:text-white transition duration-300">
             View All Campaigns →
-          </button>
+          </Link>
 
         </div>
 

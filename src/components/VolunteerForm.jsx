@@ -176,7 +176,7 @@ const VolunteerForm = () => {
 
 
   return (
-    <section className="w-full py-20 px-6 bg-[#F8F6F1]">
+    <section id="volunteer-form" className="w-full py-20 px-6 bg-[#F8F6F1]">
 
 <div className="max-w-5xl mx-auto">
 

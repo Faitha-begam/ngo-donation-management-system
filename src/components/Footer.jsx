@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -27,25 +28,11 @@ const Footer = () => {
           </h3>
 
           <ul className="space-y-2 text-sm">
-            <li className="hover:text-white transition cursor-pointer">
-              Home
-            </li>
-
-            <li className="hover:text-white transition cursor-pointer">
-              About
-            </li>
-
-            <li className="hover:text-white transition cursor-pointer">
-              Campaigns
-            </li>
-
-            <li className="hover:text-white transition cursor-pointer">
-              Donate
-            </li>
-
-            <li className="hover:text-white transition cursor-pointer">
-              Contact
-            </li>
+            <li><Link to="/" className="hover:text-white transition">Home</Link></li>
+            <li><Link to="/campaigns" className="hover:text-white transition">Campaigns</Link></li>
+            <li><Link to="/donate" className="hover:text-white transition">Donate</Link></li>
+            <li><Link to="/volunteer" className="hover:text-white transition">Volunteer</Link></li>
+            <li><Link to="/contact" className="hover:text-white transition">Contact</Link></li>
           </ul>
         </div>
 
@@ -74,7 +61,7 @@ const Footer = () => {
             Your small contribution can create a big impact.
           </p>
 
-          <button
+          <Link to="/donate"
             className="
               bg-[#D6C7A1]
               text-[#3F4935]
@@ -87,7 +74,7 @@ const Footer = () => {
             "
           >
             Donate Now
-          </button>
+          </Link>
         </div>
 
       </div>

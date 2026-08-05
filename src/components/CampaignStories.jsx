@@ -1,4 +1,5 @@
 import campaigns from "../data/campaigns";
+import { Link } from "react-router-dom";
 
 const CampaignStories = () => {
   // Skip the featured campaign
@@ -137,7 +138,7 @@ const CampaignStories = () => {
                   </div>
                                     <div className="flex flex-wrap gap-4">
 
-                    <button
+                    <Link to="/donate"
                       className="
                         px-8
                         py-3
@@ -152,9 +153,9 @@ const CampaignStories = () => {
                       "
                     >
                       Donate Now
-                    </button>
+                    </Link>
 
-                    <button
+                    <Link to={`/campaigns#campaign-${campaign.id}`}
                       className="
                         px-8
                         py-3
@@ -170,7 +171,7 @@ const CampaignStories = () => {
                       "
                     >
                       Read Story
-                    </button>
+                    </Link>
 
                   </div>
 

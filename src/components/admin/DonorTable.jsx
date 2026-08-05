@@ -3,10 +3,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   Search,
   Eye,
-  Pencil,
-  Trash2,
-  Ban,
-  CheckCircle,
   X,
   Mail,
   Phone,
@@ -16,6 +12,7 @@ import {
   ArrowUpDown,
   Filter,
   Sparkles,
+  Copy,
 } from "lucide-react";
 
 import {
@@ -110,28 +107,20 @@ const DonorTable = ({
         (a,b)=>{
 
 
-          const totalA =
-            donations
-            .filter(
-              d=>d.donorId === a.id
-            )
-            .reduce(
-              (sum,d)=>
-              sum + Number(d.amount || 0),
-              0
-            );
+          const donationRecordsA = donations.filter(
+            d => String(d.donorId) === String(a.id)
+          );
+          const totalA = (donationRecordsA.length ? donationRecordsA : (a.donations || []))
+            .filter((donation) => donation.status === "Approved")
+            .reduce((sum, d) => sum + Number(d.amount || 0), 0);
 
 
-          const totalB =
-            donations
-            .filter(
-              d=>d.donorId === b.id
-            )
-            .reduce(
-              (sum,d)=>
-              sum + Number(d.amount || 0),
-              0
-            );
+          const donationRecordsB = donations.filter(
+            d => String(d.donorId) === String(b.id)
+          );
+          const totalB = (donationRecordsB.length ? donationRecordsB : (b.donations || []))
+            .filter((donation) => donation.status === "Approved")
+            .reduce((sum, d) => sum + Number(d.amount || 0), 0);
 
 
           return totalB-totalA;
@@ -160,10 +149,17 @@ const DonorTable = ({
   const getDonationStats = (donorId)=>{
 
 
-    const donorDonations =
-      donations.filter(
-        d=>d.donorId === donorId
-      );
+    const donorDonationRecords = donations.filter(
+      d => String(d.donorId) === String(donorId)
+    );
+    const donor = users.find(user => String(user.id) === String(donorId));
+    const donorDonations = (donorDonationRecords.length
+      ? donorDonationRecords
+      : (donor?.donations || []))
+      .filter((donation) => donation.status === "Approved");
+    const mostRecentDonation = donorDonations
+      .slice()
+      .sort((a, b) => new Date(b.createdAt || b.date || 0) - new Date(a.createdAt || a.date || 0))[0];
 
 
     return {
@@ -180,14 +176,9 @@ const DonorTable = ({
       ),
 
 
-      last:
-      donorDonations.length
-      ?
-      new Date(
-        donorDonations[0].createdAt
-      ).toLocaleDateString()
-      :
-      "--"
+      last: mostRecentDonation
+        ? new Date(mostRecentDonation.createdAt || mostRecentDonation.date).toLocaleDateString()
+        : "No donations yet"
 
     };
 
@@ -205,7 +196,7 @@ const DonorTable = ({
   */
 
 
-  const openEdit=(donor)=>{
+  const _openEdit=(donor)=>{
 
 
     setEditingDonor(donor);
@@ -248,7 +239,7 @@ const DonorTable = ({
 
 
 
-  const handleStatus=(id)=>{
+  const _handleStatus=(id)=>{
 
     toggleUserStatus(id);
 
@@ -260,7 +251,7 @@ const DonorTable = ({
 
 
 
-  const handleDelete=(id)=>{
+  const _handleDelete=(id)=>{
 
 
     if(
@@ -280,6 +271,20 @@ const DonorTable = ({
 
   };
 
+  const copyContact = (value) => {
+    if (value) navigator.clipboard?.writeText(value);
+  };
+
+  const selectedDonorStats = selectedDonor
+    ? getDonationStats(selectedDonor.id)
+    : null;
+  const selectedDonorHistory = selectedDonor
+    ? (() => {
+        const records = donations.filter(d => String(d.donorId) === String(selectedDonor.id));
+        return records.length ? records : (selectedDonor.donations || []);
+      })()
+    : [];
+
 
 
 
@@ -287,7 +292,15 @@ const DonorTable = ({
 
   return (
 
-<div>
+<div
+className="
+bg-[#F5F1E8]
+rounded-2xl
+px-4
+py-3
+text-center
+"
+>
 
 
 {/* =====================================
@@ -671,6 +684,7 @@ rounded-3xl
 border
 border-[#7A866E]/10
 bg-white
+shadow-sm
 "
 >
 
@@ -684,7 +698,7 @@ w-full
 
 <thead
 className="
-bg-[#F5F1E8]
+bg-[#F8F6F1]
 "
 >
 
@@ -694,13 +708,13 @@ bg-[#F5F1E8]
 <th
 className="
 px-6
-py-5
+py-4
 text-left
 text-xs
 font-bold
 uppercase
 tracking-wider
-text-[#2E332B]/50
+text-[#66785F]
 "
 >
 Donor
@@ -710,13 +724,13 @@ Donor
 <th
 className="
 px-6
-py-5
+py-4
 text-left
 text-xs
 font-bold
 uppercase
 tracking-wider
-text-[#2E332B]/50
+text-[#66785F]
 "
 >
 Impact
@@ -727,13 +741,13 @@ Impact
 <th
 className="
 px-6
-py-5
+py-4
 text-left
 text-xs
 font-bold
 uppercase
 tracking-wider
-text-[#2E332B]/50
+text-[#66785F]
 "
 >
 Last Donation
@@ -744,13 +758,13 @@ Last Donation
 <th
 className="
 px-6
-py-5
+py-4
 text-left
 text-xs
 font-bold
 uppercase
 tracking-wider
-text-[#2E332B]/50
+text-[#66785F]
 "
 >
 Status
@@ -761,13 +775,13 @@ Status
 <th
 className="
 px-6
-py-5
+py-4
 text-center
 text-xs
 font-bold
 uppercase
 tracking-wider
-text-[#2E332B]/50
+text-[#66785F]
 "
 >
 Actions
@@ -800,6 +814,13 @@ const blocked =
 (donor.accountStatus || "Active")
 ==="Blocked";
 
+const donorEngagement =
+stats.count >= 3
+? "Regular Donor"
+: stats.count > 0
+? "Active Donor"
+: "New Donor";
+
 
 
 
@@ -811,8 +832,8 @@ key={donor.id}
 
 className="
 border-t
-border-[#7A866E]/10
-hover:bg-[#F5F1E8]/50
+border-[#E9E0D5]
+hover:bg-[#F8F6F1]
 transition-all
 duration-300
 group
@@ -827,7 +848,7 @@ group
 <td
 className="
 px-6
-py-5
+py-6
 "
 >
 
@@ -843,16 +864,17 @@ gap-4
 
 <div
 className="
-w-12
-h-12
-rounded-2xl
-bg-[#7A866E]/10
+w-13
+h-13
+rounded-full
+bg-[#F0E7DB]
 text-[#7A866E]
 flex
 items-center
 justify-center
 font-bold
 text-lg
+shadow-sm
 "
 >
 
@@ -875,8 +897,10 @@ min-w-0
 
 <p
 className="
+text-base
+text-sm
 font-bold
-text-[#2E332B]
+text-[#66785F]
 truncate
 "
 >
@@ -889,7 +913,7 @@ truncate
 <p
 className="
 text-sm
-text-[#2E332B]/45
+text-gray-500
 truncate
 "
 >
@@ -918,7 +942,7 @@ truncate
 <td
 className="
 px-6
-py-5
+py-6
 "
 >
 
@@ -935,9 +959,9 @@ gap-3
 <div
 className="
 bg-[#7A866E]/10
-rounded-xl
-px-3
-py-2
+rounded-2xl
+px-4
+py-3
 text-center
 "
 >
@@ -946,7 +970,7 @@ text-center
 className="
 text-sm
 font-bold
-text-[#2E332B]
+text-[#66785F]
 "
 >
 
@@ -958,11 +982,13 @@ text-[#2E332B]
 className="
 text-[10px]
 uppercase
-text-[#2E332B]/40
+font-bold
+tracking-wide
+text-gray-500
 "
 >
 
-Gifts
+Donations
 
 </p>
 
@@ -973,12 +999,21 @@ Gifts
 
 
 
-<div>
+<div
+className="
+bg-[#F5F1E8]
+rounded-2xl
+px-4
+py-3
+text-center
+"
+>
 
 <p
 className="
+text-sm
 font-bold
-text-[#2E332B]
+text-[#66785F]
 "
 >
 
@@ -990,8 +1025,11 @@ text-[#2E332B]
 
 <p
 className="
-text-xs
-text-[#2E332B]/45
+text-[10px]
+uppercase
+font-bold
+tracking-wide
+text-gray-500
 "
 >
 
@@ -1100,7 +1138,7 @@ font-bold
 "
 >
 
-Active
+{donorEngagement}
 
 </span>
 
@@ -1140,6 +1178,9 @@ onClick={()=>
 setSelectedDonor(donor)
 }
 
+title="View donor details"
+aria-label="View donor details"
+
 className="
 w-10
 h-10
@@ -1157,91 +1198,18 @@ transition-all
 
 </button>
 
-
-
-
 <button
-
-onClick={()=>
-openEdit(donor)
-}
-
-className="
-w-10
-h-10
-rounded-xl
-bg-[#F5F1E8]
-text-[#2E332B]/60
-hover:bg-[#7A866E]
-hover:text-white
-transition-all
-"
-
+onClick={()=>setSelectedDonor(donor)}
+title="View donation history"
+aria-label="View donation history"
+className="w-10 h-10 rounded-xl bg-[#F0E7DB] text-[#66785F] transition-all hover:-translate-y-0.5 hover:bg-[#66785F] hover:text-white"
 >
-
-<Pencil size={17}/>
-
+<Wallet size={17}/>
 </button>
 
 
 
 
-
-<button
-
-onClick={()=>
-handleStatus(donor.id)
-}
-
-className="
-w-10
-h-10
-rounded-xl
-bg-[#F5F1E8]
-text-[#2E332B]/60
-hover:bg-[#7A866E]
-hover:text-white
-transition-all
-"
-
->
-
-{
-blocked
-?
-<CheckCircle size={17}/>
-:
-<Ban size={17}/>
-}
-
-</button>
-
-
-
-
-
-<button
-
-onClick={()=>
-handleDelete(donor.id)
-}
-
-className="
-w-10
-h-10
-rounded-xl
-bg-red-50
-text-red-500
-hover:bg-red-500
-hover:text-white
-transition-all
-"
-
->
-
-<Trash2 size={17}/>
-
-</button>
 
 
 
@@ -1503,7 +1471,7 @@ mt-1
 "
 >
 
-Gifts
+Donations
 
 </p>
 
@@ -1613,7 +1581,7 @@ Latest
 <div
 className="
 grid
-grid-cols-4
+grid-cols-2
 gap-2
 mt-5
 "
@@ -1654,14 +1622,14 @@ transition
 <button
 
 onClick={()=>
-openEdit(donor)
+setSelectedDonor(donor)
 }
 
 className="
 h-10
 rounded-xl
-bg-[#F5F1E8]
-text-[#2E332B]/70
+bg-[#F0E7DB]
+text-[#66785F]
 flex
 items-center
 justify-center
@@ -1672,7 +1640,7 @@ transition
 
 >
 
-<Pencil size={16}/>
+<Wallet size={16}/>
 
 </button>
 
@@ -1681,65 +1649,6 @@ transition
 
 
 
-<button
-
-onClick={()=>
-handleStatus(donor.id)
-}
-
-className="
-h-10
-rounded-xl
-bg-[#F5F1E8]
-text-[#2E332B]/70
-flex
-items-center
-justify-center
-hover:bg-[#7A866E]
-hover:text-white
-transition
-"
-
->
-
-{
-blocked
-?
-<CheckCircle size={16}/>
-:
-<Ban size={16}/>
-}
-
-</button>
-
-
-
-
-
-<button
-
-onClick={()=>
-handleDelete(donor.id)
-}
-
-className="
-h-10
-rounded-xl
-bg-red-50
-text-red-500
-flex
-items-center
-justify-center
-hover:bg-red-500
-hover:text-white
-transition
-"
-
->
-
-<Trash2 size={16}/>
-
-</button>
 
 
 
@@ -1996,6 +1905,8 @@ truncate
 {selectedDonor.email}
 </p>
 
+<button onClick={() => copyContact(selectedDonor.email)} className="mt-3 inline-flex items-center gap-1 rounded-lg bg-white px-2.5 py-1.5 text-xs font-bold text-[#66785F] shadow-sm transition hover:bg-[#66785F] hover:text-white"><Copy size={12} />Copy email</button>
+
 </div>
 
 
@@ -2033,11 +1944,7 @@ text-sm
 {selectedDonor.phone || "N/A"}
 </p>
 
-</div>
-
-
-
-
+{selectedDonor.phone && <button onClick={() => copyContact(selectedDonor.phone)} className="mt-3 inline-flex items-center gap-1 rounded-lg bg-white px-2.5 py-1.5 text-xs font-bold text-[#66785F] shadow-sm transition hover:bg-[#66785F] hover:text-white"><Copy size={12} />Copy phone</button>}
 
 </div>
 
@@ -2045,7 +1952,19 @@ text-sm
 
 
 
+</div>
 
+
+
+
+
+
+
+<div className="mt-5 grid grid-cols-3 gap-3">
+<div className="rounded-2xl bg-[#F5F1E8] p-4"><p className="text-[10px] font-bold uppercase tracking-wide text-gray-500">Donations</p><p className="mt-1 text-xl font-bold text-[#66785F]">{selectedDonorStats?.count || 0}</p></div>
+<div className="rounded-2xl bg-[#F5F1E8] p-4"><p className="text-[10px] font-bold uppercase tracking-wide text-gray-500">Total Impact</p><p className="mt-1 text-xl font-bold text-[#66785F]">₹{selectedDonorStats?.amount?.toLocaleString() || 0}</p></div>
+<div className="rounded-2xl bg-[#F5F1E8] p-4"><p className="text-[10px] font-bold uppercase tracking-wide text-gray-500">Latest Donation</p><p className="mt-1 text-xs font-bold leading-5 text-[#2E332B]">{selectedDonorStats?.last || "No donations yet"}</p></div>
+</div>
 
 {/* DONATION HISTORY */}
 
@@ -2074,10 +1993,7 @@ Donation Journey
 
 {
 
-donations.filter(
-d=>d.donorId===selectedDonor.id
-)
-.length===0
+selectedDonorHistory.length===0
 
 ?
 
@@ -2106,11 +2022,7 @@ space-y-3
 
 {
 
-donations
-.filter(
-d=>d.donorId===selectedDonor.id
-)
-.map(donation=>(
+selectedDonorHistory.map(donation=>(
 
 
 <div

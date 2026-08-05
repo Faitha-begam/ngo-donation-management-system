@@ -1541,7 +1541,8 @@ UPDATE DONATION STATUS
 export const updateDonationStatus = (
 
   donationId,
-  status
+  status,
+  rejectionReason = ""
 
 ) => {
 
@@ -1579,6 +1580,11 @@ export const updateDonationStatus = (
 
           status,
 
+          rejectionReason:
+            status === "Rejected"
+              ? rejectionReason
+              : donation.rejectionReason || "",
+
 
 
           updatedAt:
@@ -1600,6 +1606,23 @@ export const updateDonationStatus = (
 
   saveDonations(
     updated
+  );
+
+  const users = getUsers();
+  saveUsers(
+    users.map((user) => ({
+      ...user,
+      donations: (user.donations || []).map((donation) =>
+        donation.id === donationId
+          ? {
+              ...donation,
+              status,
+              rejectionReason: status === "Rejected" ? rejectionReason : donation.rejectionReason || "",
+              updatedAt: new Date().toISOString(),
+            }
+          : donation
+      ),
+    }))
   );
 
 

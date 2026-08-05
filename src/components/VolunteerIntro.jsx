@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const VolunteerIntro = () => {
   return (
     <section className="w-full pt-32 pb-20 px-6 bg-[#F8F6F1]">
@@ -16,8 +18,10 @@ const VolunteerIntro = () => {
         </p>
 
         {/* CTA */}
-        <button
+        <Link
+          to="/volunteer#volunteer-form"
           className="
+            inline-flex
             mt-8
             px-8
             py-3
@@ -33,7 +37,7 @@ const VolunteerIntro = () => {
           "
         >
           Join as Volunteer
-        </button>
+        </Link>
 
       </div>
     </section>

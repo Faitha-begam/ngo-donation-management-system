@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const CampaignCTA = () => {
 
   return (
@@ -52,7 +54,7 @@ const CampaignCTA = () => {
 
           <div className="flex justify-center gap-5 mt-10 flex-wrap">
 
-            <button
+            <Link to="/donate"
               className="
                 bg-white
                 text-[#2E332B]
@@ -65,10 +67,10 @@ const CampaignCTA = () => {
               "
             >
               Donate Now
-            </button>
+            </Link>
 
 
-            <button
+            <Link to="/volunteer"
               className="
                 border
                 border-white/40
@@ -82,7 +84,7 @@ const CampaignCTA = () => {
               "
             >
               Become A Volunteer
-            </button>
+            </Link>
 
           </div>
 

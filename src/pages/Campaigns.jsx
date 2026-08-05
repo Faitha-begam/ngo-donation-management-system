@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Impact from "../components/Impact";
@@ -121,6 +122,7 @@ const Campaigns = () => {
 
                 <div
                   key={campaign.id}
+                  id={`campaign-${campaign.id}`}
                   className={`grid lg:grid-cols-2 gap-16 items-center ${
                     reverse
                       ? "lg:[&>*:first-child]:order-2"
@@ -246,7 +248,8 @@ const Campaigns = () => {
 
                     <div className="flex flex-wrap gap-4">
 
-                      <button
+                      <Link
+                        to="/donate"
                         className="
                           px-8
                           py-4
@@ -259,9 +262,10 @@ const Campaigns = () => {
                         "
                       >
                         Donate Now
-                      </button>
+                      </Link>
 
-                      <button
+                      <Link
+                        to={`/campaigns#campaign-${campaign.id}`}
                         className="
                           px-8
                           py-4
@@ -276,7 +280,7 @@ const Campaigns = () => {
                         "
                       >
                         Learn More
-                      </button>
+                      </Link>
 
                     </div>
 
